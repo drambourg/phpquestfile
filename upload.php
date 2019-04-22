@@ -4,7 +4,6 @@ if (isset($_POST['submit'])) {
     $allowedFormats = ['image/gif', 'image/jpg', 'image/png',];
     $maxSize = 1000000;
     $files=[];
-    var_dump($_FILES);
     if (count($_FILES['upload']['name']) > 0) {
         //Loop through each file
         for ($i = 0; $i < count($_FILES['upload']['name']); $i++) {
@@ -17,7 +16,7 @@ if (isset($_POST['submit'])) {
                     'uploaded' => false,
                     'uploadederror' => 'Format non supporté.',
                 ];
-            } else if ($_FILES['fichier']['size'][$i] > $maxSize) {
+            } else if ($_FILES['upload']['size'][$i] > $maxSize) {
                 $files[] = [
                     'fileName' => $shortNameFile,
                     'fileSize' => $_FILES['upload']['size'][$i],
@@ -83,17 +82,17 @@ if (isset($_POST['submit'])) {
 </header>
 <section class="container">
     <?php if (is_array($files)) : ?>
-        <ul class="list-group">
+        <div class="jumbotron p-5 text-center d-flex flex-wrap justify-content-between align-items-center">
             <?php foreach($files as $file) : ?>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
                 <?php if ( $file['uploaded'] == true) : ?>
-                <div class="card border-success mb-3 col-lg-3 col-md-4 col-sm-6 col-xs-12 px-0">
+                <div class="card border-success m-1 col-lg-3 col-md-4 col-sm-6 col-xs-12 px-0">
                     <div class="card-header text-center"><?= $file['fileName'] ?><span class=" mx-2 badge badge-pill badge-success">Ok</span></div>
                     <div class="card-body">
                         <p class="card-text">Taille du fichier : <?= $file['fileSize'] ?> octets</p>
                         <p class="card-text">Type de fichier : <?= $file['fileType'] ?></p>
                         <h5 class="card-text text-center text-success">Bravo!!</h5>
                     </div>
+                </div>
                     <?php else : ?>
                     <div class="card border-danger mb-3 col-lg-3 col-md-4 col-sm-6 col-xs-12 px-0">
                         <div class="card-header text-center"><?= $file['fileName'] ?><span class="mx-2 badge badge-pill badge-danger">Error</span></div>
@@ -104,11 +103,10 @@ if (isset($_POST['submit'])) {
                             <p class="card-text">Type de fichier : <?= $file['fileType'] ?></p>
                             <h5 class="card-text text-center text-danger">Non uploadé!!</h5>
                         </div>
+                    </div>
                     <?php endif ?>
-
-            </li>
             <?php endforeach ?>
-        </ul>
+        </div>
     <?php else : ?>
         <div class="alert alert-dismissible alert-danger">
             < <h4 class="alert-heading">Aucun fichier n'ont été sélectionnés!</h4>

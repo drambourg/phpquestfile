@@ -1,6 +1,42 @@
 <?php
-$filePathUpload = './upload/';
-$itFiles = new FilesystemIterator(dirname($filePathUpload));
+require_once('src/download.php');
+
+$dirPathUpload = "./upload/";
+$itFiles = new FilesystemIterator($dirPathUpload);
+$fileExist = false;
+$countfiles = 0;
+foreach ($itFiles as $file) {
+    $countfiles++;
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['fileToDelete'])) {
+        $fileExist = false;
+        foreach ($itFiles as $file) {
+            if ($file == $_POST['fileToDelete']) {
+                $fileExist = true;
+                break;
+            }
+        }
+        echo $fileExist;
+        if ($fileExist) {
+            unlink($file);
+        }
+    }
+    if (isset($_POST['fileToDownload'])) {
+        $fileExist = false;
+        foreach ($itFiles as $file) {
+            if ($file == $_POST['fileToDownload']) {
+                $fileExist = true;
+                break;
+            }
+        }
+        if ($fileExist) {
+            downloadfile($file);
+        }
+    }
+}
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -28,20 +64,44 @@ $itFiles = new FilesystemIterator(dirname($filePathUpload));
     </div>
 </header>
 <div class="container-fluid justify-content-center">
+    <div class="jumbotron text-center">
+        <h4 class="text-success">Nombre de fichiers dans ta bibliothèque</h4>
+        <p class="lead"><?= $countfiles ?> Fichier(s)</p>
+        <hr class="my-4">
+        </p>
+    </div>
+    <?php if ($fileExist == true) : ?>
+        <section>
+            <div class="alert alert-dismissible alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Bien joué : </strong> <a href="#" class="alert-link">Fichier <?= $_POST['fileToDelete'] ?>
+                    supprimé</a>
+            </div>
+        </section>
+    <?php endif ?>
+
     <section>
 
         <div class="row justify-content-center">
-                <?php foreach ($itFiles as $file) : ?>
-                        <div class="card border-info m-1 col-lg-3 col-md-4 col-sm-6 col-xs-12 px-0">
-                            <div class="card-header text-center"><h5 class="card-title"><?= $itFiles ?></h5></div>
-                            <div class="card-body">
-                                <div class="m-1 text-center">
-                                    <a class="btn btn-info" href="index.php" role="button">Télécharger ...</a>
-                                </div>
-                            </div>
-                        </div>
+            <?php foreach ($itFiles as $file) : ?>
+                <div class="card border-info m-1 col-lg-3 col-md-4 col-sm-6 col-xs-12 px-0">
+                    <div class="card-header text-center"><h5 class="card-title"><?= $itFiles ?></h5></div>
+                    <div class="card-body">
+                        <img src="<?= $file ?>" alt="<?= $itFiles ?>" class="img-thumbnail">
 
-                <?php endforeach ?>
+                        <form method="post" action="">
+                            <div class="m-1 text-center">
+                                <div class="m-1 text-center">
+                                    <button type="submit"class="btn btn-info" name="fileToDownload" value="<?= $file ?>">Télécharger ...</button>
+                                </div>
+                                <button type="submit" class="btn btn-warning" name="fileToDelete" value="<?= $file ?>">Supprimer le fichier</button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            <?php endforeach ?>
 
 
         </div>
